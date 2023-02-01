@@ -1,5 +1,5 @@
 import express from 'express'
-import { loggedOut, loginUser, userInfo, userRegisterController } from '../controller/userRegisterController.js'
+import { forgotpassword, loggedOut, loginUser, resetpassordtoken, userInfo, userRegisterController } from '../controller/userRegisterController.js'
 import  {isAuth}  from '../middlewares/isAuth.js'
 
 
@@ -7,8 +7,11 @@ const userRoute= express.Router()
 
 userRoute.route('/register').post(userRegisterController)
 userRoute.route('/login').post(loginUser)
-userRoute.route('/logout').post(loggedOut)
+userRoute.route('/logout').get(loggedOut)
 userRoute.route('/info').get(isAuth,userInfo)
+userRoute.route('/forgotpassword').post(forgotpassword)
+userRoute.route('/resetpassword/:passwordtoken').post(resetpassordtoken)
+
 
 
 export default userRoute

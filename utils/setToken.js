@@ -6,8 +6,9 @@ export const setToken =(res,user,message,statusCode=201)=>{
     const option={
         expires: new Date(Date.now()+10*24*60*60*1000) ,
         httpOnly:true,
-        secure:true
-        
+        // secure:false,
+       
+          
 
     }
 
@@ -15,7 +16,7 @@ export const setToken =(res,user,message,statusCode=201)=>{
         success:true,
         user,
         message,
-        auth:true
+      
     })
 
 

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import  jwt  from "jsonwebtoken";
 import isEmail from "validator/lib/isEmail.js";
 import bcrypt from 'bcrypt'
+import crypto from "crypto"
 
 const schema= new mongoose.Schema({
 
@@ -72,6 +73,13 @@ const schema= new mongoose.Schema({
         }
 
     },
+    image:{
+        type:Object,
+        
+    },
+    resetPasswordToken:String,
+    resetPasswordExpire:String
+
     
 
 
@@ -97,9 +105,21 @@ schema.methods.jwtToken=function (){
 }
 
 
+schema.methods.forgetPasswordTokenGenerator= async function (){
+
+ const restToken=  crypto.randomBytes(20).toString("hex")
+
+ this.resetPasswordToken= crypto.createHash("sha256").update(restToken).digest("hex")
+ this.resetPasswordExpire= Date.now()+15*60*1000
+
+ return restToken
+
+
+
+}
 
 
 
 
-export const UserInfo= mongoose.model('userinfos',schema)
+export const UserInfo= mongoose.model('userData',schema)
 
