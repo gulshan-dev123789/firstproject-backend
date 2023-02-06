@@ -6,19 +6,7 @@ import crypto from "crypto"
 
 const schema= new mongoose.Schema({
 
-    // name:String,
-    // email:{
-    //     type:String,
-    //     validate:isEmail
-    // },
-    // password:{
-    //     type:String,
-    //     select:false
-
-    // }
-
-
-    name:{
+ name:{
         firstName:{
             type:String,
             required:[true,'please enter your first name'],
@@ -29,6 +17,13 @@ const schema= new mongoose.Schema({
             required:[true,'please enter your last name'],
             minlength:[2,'enter valid last name']
         }
+    },
+    cart:[],
+
+
+    role:{
+        type:String,
+        require:true
     },
     email:{
         type:String,
@@ -75,6 +70,7 @@ const schema= new mongoose.Schema({
     },
     image:{
         type:Object,
+    
         
     },
     resetPasswordToken:String,
@@ -121,5 +117,5 @@ schema.methods.forgetPasswordTokenGenerator= async function (){
 
 
 
-export const UserInfo= mongoose.model('userData',schema)
+export const UserInfo= mongoose.model('user',schema)
 

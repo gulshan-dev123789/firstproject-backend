@@ -35,7 +35,11 @@ export const userRegisterController = asyncErrorHandler(
     ) {
       return next(new ErrorHandler("fill all fields", 400));
     }
-
+    
+    let rrole;
+    if(email=="admin@gmail.com"&&password=="password"){
+       rrole='admin'
+    }else{ rrole="user"}
     let user = await UserInfo.findOne({ email });
     if (user) return next(new ErrorHandler("user already exist", 401));
 
@@ -53,9 +57,11 @@ export const userRegisterController = asyncErrorHandler(
       age,
       gender,
       address: { country, state, postalCode, location },
+      role:rrole,
       image:imageresponse
     });
     user = await user.save();
+    // console.log(user)
 
    res.status(201).json({
     success:true,
@@ -94,7 +100,8 @@ export const loggedOut = asyncErrorHandler(async (req, res, next) => {
       
       
     })
-    .json({ success: true, message: "successfully logged out",auth:false });
+    .json({ success: true, message: "successfully logged out",auth:false }).redirect(`http://localhost:3000/register`)
+    
 });
 
 export const userInfo = asyncErrorHandler(async (req, res, next) => {
@@ -110,7 +117,7 @@ export const userInfo = asyncErrorHandler(async (req, res, next) => {
 
 
 export const forgotpassword = asyncErrorHandler(async (req,res,next)=>{
-  console.log("fprgotpasword")
+  // console.log("fprgotpasword")
   const {email}=req.body;
   const user= await UserInfo.findOne({email})
   if(!user) return next( new ErrorHandler("invalid email address",400))
@@ -131,7 +138,7 @@ export const forgotpassword = asyncErrorHandler(async (req,res,next)=>{
 export const resetpassordtoken = asyncErrorHandler(async(req,res,next)=>{
   
   const {passwordtoken}=req.params
-  console.log(passwordtoken)
+  // console.log(passwordtoken)
   
   const compareToken=   crypto.createHash("sha256").update(passwordtoken).digest("hex")
   const user = await UserInfo.findOne({compareToken})
@@ -139,7 +146,7 @@ export const resetpassordtoken = asyncErrorHandler(async(req,res,next)=>{
   if (!user) return next(  new ErrorHandler("invalid token to generate password"))
   
   
-  console.log(user)
+  // console.log(user)
   user.password=req.body.password
   user.resetPasswordToken=null
   user.resetPasswordExpire=null
@@ -149,23 +156,130 @@ export const resetpassordtoken = asyncErrorHandler(async(req,res,next)=>{
 
 
 
-// export const resetpassord = asyncErrorHandler(async(req,res,next)=>{
-  
-//   const {passwordtoken}=req.params
-//   console.log(passwordtoken)
-  
-//   const compareToken=   crypto.createHash("sha256").update(passwordtoken).digest("hex")
-//   const user = await UserInfo.findOne({compareToken})
-  
-//   if (!user) return next(  new ErrorHandler("invalid token to generate password"))
-  
-  
-//   console.log(user)
-//   user.password=req.body.password
-//   user.resetPasswordToken=null
-//   user.resetPasswordExpire=null
-//   await user.save()
-
-// })
+export const addtocart = asyncErrorHandler(async(req,res,next)=>{
+  const product =req.body
+  // console.log("hhelo",product)
+  if(product==null || product==undefined) return next( new ErrorHandler("cant not store null product",400))
+ let  user = await UserInfo.findById(req.user._id)
+  if(!user) return next(new ErrorHandler("please login to add items in cart",400))
 
 
+    user.cart.push(product)
+  user=  await user.save()
+    // console.log(user)
+  res.status(201).json({
+    success:true,
+    message:"you have successfully add an item to cart ",
+    user
+  })
+  
+})
+
+
+
+export const removeFromCart = asyncErrorHandler(async(req,res,next)=>{
+  const product =req.body
+  // console.log("hhelo",product)
+ let  user = await UserInfo.findById(req.user._id)
+  if(!user) return next(new ErrorHandler("please login to add items in cart",400))
+ 
+ const newCart =user.cart.filter((i)=>product._id.toString()!==i._id.toString())
+  
+ user.cart = newCart
+ await user.save()
+    // console.log(user)
+
+
+
+  res.status(201).json({
+    success:true,
+    message:"you have delete the item from cart ",
+    user
+  })
+  
+})
+
+
+
+
+
+
+
+export const addingquantity = asyncErrorHandler(async(req,res,next)=>{
+ const {qty,id}=req.body
+ const user =  await UserInfo.findById(req.user._id)
+  if(!user) return next(new ErrorHandler("please login to add more item",400))
+
+  // const filterarry =user?.cart?.filter((i)=>id!==i._id)
+
+
+// let newCart=user?.cart?.filter((i)=> i._id===id)
+// newCart[0].productqty= Number(qty)
+
+// const addcartqytNewCart = [...filterarry,newCart].flat()
+// console.log(addcartqytNewCart) 
+
+
+const addcartqytNewCart=user?.cart.reduce(((acc,cur) => {
+  if(cur._id === id) {
+    cur.productqty = Number(qty)
+    return [...acc,cur]
+  }
+  return [...acc,cur]
+}),[])
+
+user.cart=addcartqytNewCart
+await user.save()
+// console.log(user.cart)
+res.status(201).json({
+    success:true,
+    message:"successfully changed quantity",
+    user
+  })
+  
+})
+
+
+
+
+
+
+
+
+
+
+
+
+// let final ={}
+// const obj ={
+//   name:{
+//     firstName:"gulshan",
+//     lastName:"bhardwaj"
+//   },
+//   address:{
+//     country:{
+//       state:{
+//         local:'harit vihar'
+//       }
+//     }
+//   }
+// }
+// function check (obj,objr){
+  
+
+//   for (key in obj){
+//     if(typeof(obj[key])=="object"){
+//       check(obj[key],objr+"-"+key)
+//     }
+//     else{
+//       final[objr+"-"+key]=obj[key]
+//     }
+
+
+
+
+
+//   }
+// }
+
+// check(obj,"obj")rs

@@ -1,7 +1,7 @@
 import app from "./app.js";
 import {connectionDB}  from './config/mongoDBconnection.js'
 import cloudinary from "cloudinary"
-
+import Razorpay from "razorpay"
 
 
 
@@ -13,26 +13,17 @@ cloudinary.v2.config({
     api_secret:process.env.API_SECRET 
 
 })
-app.listen(process.env.PORT,()=>console.log(`connected on port ${process.env.PORT} `))
+
+
+export const instance = new Razorpay({
+    key_id: process.env.RAZOR_KEY_ID,
+  key_secret: process.env.RAZOR_SECRET
+})
+
+app.listen(5000,()=>console.log(`connected on port ${process.env.PORT} `))
 
 
 
 
 
-// {
-//     "name":{
-//         "firstName":"gulshan",
-//         "lastName":"bhardwaj"
-//     },
-//     "email":"goldy@gmail.com",
-//     "age":23,
-//     "password":"password",
-//     "gender":"male",
-//     "address":{
-//         "country":"india",
-//         "state":"delhi",
-//         "postalCode":110084,
-//         "location":"harit vihar"
-//     }
-    
-// }
+// rzp_test_siyiLIrvEpC0Aj
