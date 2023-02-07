@@ -35,6 +35,7 @@ const  options = {
 
 
 export const paymentVarification =  asyncErrorHandler( async(req,res,next)=>{
+    console.log("payment")
 const{razorpay_payment_id,razorpay_order_id,razorpay_signature}= req.body
 
 const user = await UserInfo.findById(req.user._id)

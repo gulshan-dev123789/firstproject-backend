@@ -207,34 +207,43 @@ export const removeFromCart = asyncErrorHandler(async(req,res,next)=>{
 
 export const addingquantity = asyncErrorHandler(async(req,res,next)=>{
  const {qty,id}=req.body
- const user =  await UserInfo.findById(req.user._id)
-  if(!user) return next(new ErrorHandler("please login to add more item",400))
 
-  // const filterarry =user?.cart?.filter((i)=>id!==i._id)
+const  user =  await UserInfo.findById(req.user._id)
+  
+console.log(user?.cart)
+
+if(!user) return next(new ErrorHandler("please login to add more item",400))
+
+//   const filterarry =user?.cart?.filter((i)=>id!==i._id)
 
 
 // let newCart=user?.cart?.filter((i)=> i._id===id)
 // newCart[0].productqty= Number(qty)
 
-// const addcartqytNewCart = [...filterarry,newCart].flat()
+// const addcartqytNewCart = [...filterarry,...newCart]
 // console.log(addcartqytNewCart) 
 
 
-const addcartqytNewCart=user?.cart.reduce(((acc,cur) => {
-  if(cur._id === id) {
-    cur.productqty = Number(qty)
-    return [...acc,cur]
+const addcartqytNewCart=  user?.cart.reduce(((acc,cur) => {
+  if(cur._id == id) {
+    // cur.productqty = Number(qty)
+    const l=cur
+    const obj ={...l,productqty:Number(qty)}
+    // console.log(obj)
+    return [...acc,obj]
   }
-  return [...acc,cur]
+  else return [...acc,cur]
 }),[])
+// console.log(addcartqytNewCart)
 
-user.cart=addcartqytNewCart
-await user.save()
+user.cart=  addcartqytNewCart
+const result= await user.save()
+// console.log(user?.cart)
 // console.log(user.cart)
 res.status(201).json({
     success:true,
     message:"successfully changed quantity",
-    user
+    result
   })
   
 })
